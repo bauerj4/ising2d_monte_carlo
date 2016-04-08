@@ -28,7 +28,8 @@ int main(int argc, char ** argv)
 
   Metropolis();
 
-  //PrintMatrix(SpinMesh, imax, LATTICE_SIZE);
+  if (ThisTask == 2)
+    PrintMatrix(SpinMesh, imax, LATTICE_SIZE);
   Finalize();
 
   MPI_Finalize(); // Close communication

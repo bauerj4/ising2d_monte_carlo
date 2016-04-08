@@ -19,6 +19,9 @@ int Initialize()
 
   // Partition the meshes
 
+  FirstRows = VectorMalloc(LATTICE_SIZE * NTasks);
+  LastRows = VectorMalloc(LATTICE_SIZE * NTasks);
+
   if (ThisTask == 0)
     printf("Communication open on all channels. Partitioning meshes.\n");
 
@@ -35,8 +38,8 @@ int Initialize()
     printf("Allocating mesh memory...\n");
 
   // Last two rows are the bottom and top ghost rows respectively
-  SpinMesh = MatrixMalloc(rmax + 2, (int)LATTICE_SIZE);
-  OldSpinMesh = MatrixMalloc(rmax + 2, (int)LATTICE_SIZE);
+  SpinMesh = MatrixMalloc(rmax , (int)LATTICE_SIZE);
+  OldSpinMesh = MatrixMalloc(rmax , (int)LATTICE_SIZE);
 
   if (ThisTask==0)
     printf("Allocated %f MB / thread on %d threads to the meshes.\n", (double)ByteCount/1.e6, NTasks);
@@ -54,8 +57,12 @@ int Initialize()
     printf ("Getting ghost row...\n");
   //PrintMatrix(SpinMesh, rmax, LATTICE_SIZE);
 
-  GetGhostRowBottom();
-  GetGhostRowTop();
+  //GetGhostRowBottom();
+  // GetGhostRowTop();
+
+  MPI_Allgather(SpinMesh[rmax-1],LATTICE_SIZE,MPI_SHORT,LastRows,LATTICE_SIZE,MPI_SHORT,MPI_COMM_WORLD);
+  MPI_Allgather(SpinMesh[0],LATTICE_SIZE,MPI_SHORT,FirstRows,LATTICE_SIZE,MPI_SHORT,MPI_COMM_WORLD);
+
   SpinMatrixDeepCopy();
 
   return 0; // success
@@ -75,8 +82,8 @@ void GenerateRandomSpins()
     }
 
 
-  for (i=0; i < rmax+2; i++)
-    for (j=0; j < LATTICE_SIZE+2; j++)
+  for (i=0; i < rmax; i++)
+    for (j=0; j < LATTICE_SIZE; j++)
       {
 	val = (short int) RandomIntInRange(0,1);
 	if (val == 0)

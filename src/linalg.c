@@ -180,7 +180,7 @@ void PrintMatrixToFile(short int ** matrix, int n, int m)
   //fwrite(&min, sizeof(int), 1, fileout);
   //fwrite(&max, sizeof(int), 1, fileout);
 
-  for (i=0; i<imax; i++)
+  for (i=0; i<max; i++)
     {
       for (j=0; j<LATTICE_SIZE; j++)
         {
@@ -203,14 +203,14 @@ void SpinMatrixDeepCopy()
 
   // Copy ghost row too
   if (ThisTask != NTasks-1)
-    deep_max = ProcArray[ThisTask + 1] - ProcArray[ThisTask] + 2;
+    deep_max = ProcArray[ThisTask + 1] - ProcArray[ThisTask];
   else
-    deep_max = LATTICE_SIZE - ProcArray[ThisTask] + 2;
+    deep_max = LATTICE_SIZE - ProcArray[ThisTask];
 
   for (deep_i=0; deep_i < deep_max; deep_i++)
     for (deep_j=0; deep_j < LATTICE_SIZE; deep_j++)
       {
-	//printf("i,j = %d, %d\n", i,j);
+	//printf("i,j = %d, %d\n", deep_i,deep_j);
 	OldSpinMesh[deep_i][deep_j] = SpinMesh[deep_i][deep_j];
       }
   //printf("Matrix copied.\n");

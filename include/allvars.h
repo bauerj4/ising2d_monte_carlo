@@ -19,8 +19,8 @@ extern int TaskToSendTo;
 extern int ReadToRow;
 extern int SendFromRow;
 extern int imax;
-extern int * FirstRows;
-extern int * LastRows;
+extern short int * FirstRows;
+extern short int * LastRows;
 extern int * flag;
 extern MPI_Status * status;
 

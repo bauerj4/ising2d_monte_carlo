@@ -17,8 +17,8 @@ int TaskToSendTo;
 int ReadToRow;
 int SendFromRow;
 int imax;
-int * FirstRows;
-int * LastRows;
+short int * FirstRows;
+short int * LastRows;
 int * flag;
 MPI_Status * status;
 

@@ -29,32 +29,43 @@ int Metropolis()
   i=0;
   while (n < (int)NSTEPS)
     {
-      if (ThisTask == 0)
-	printf("Metropolis Iteration: %d / %d \t Memory Allocated: %10.2f MB\r", (n+1), NSTEPS, \
-	       (double)ByteCount/1.e6);
-      i = RandomIntInRange(0, imax);
-      j = RandomIntInRange(0, imax);
+       if (ThisTask == 0 && n % 200 == 0)
+      	printf("Metropolis Iteration: %d / %d \t Memory Allocated: %10.2f MB\r", (n+1), NSTEPS, \
+      	       (double)ByteCount/1.e6);
+      i = RandomIntInRange(0, imax-1);
+      j = RandomIntInRange(0, LATTICE_SIZE);
 
       Ediff = DeltaU(i,j);
       
       //printf("i,j,Ediff = %d,%d,%f\n",i,j,Ediff);
       
       if (Ediff < 0.)
+	{
 	  SpinMesh[i][j] *= -1;
+	  //printf("Flipping spin on thread %d\n", ThisTask);
+	}
       else
 	{
 	  rand = Uniform();
 	  prob = exp(-Ediff / TEMPERATURE);
 	  if (rand < prob)
-	    SpinMesh[i][j] *= -1;
+	    {
+	      //printf("Flipping spin on thread %d\n", ThisTask);
+	      SpinMesh[i][j] *= -1;
+	    }
 	}
 
       MPI_Barrier(MPI_COMM_WORLD);
 
-      GetGhostRowTop();
-      GetGhostRowBottom();
+      //GetGhostRowTop();
+      //GetGhostRowBottom();
+      MPI_Allgather(SpinMesh[imax-1],LATTICE_SIZE,MPI_SHORT,LastRows,LATTICE_SIZE,MPI_SHORT,MPI_COMM_WORLD);
+      MPI_Allgather(SpinMesh[0],LATTICE_SIZE,MPI_SHORT,FirstRows,LATTICE_SIZE,MPI_SHORT,MPI_COMM_WORLD);
+      //printf("Gathered elements from thread %d\n", ThisTask);
       SpinMatrixDeepCopy();
-      
+      //printf("Copied\n");
+
+      //break;
       MPI_Barrier(MPI_COMM_WORLD);
       n++;
     }

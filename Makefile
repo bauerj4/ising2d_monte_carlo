@@ -7,7 +7,7 @@ SRC 	 = src/main.c src/allvars.c src/init.c src/proc.c src/linalg.c src/stats.c 
 
 make:
 	python make_macros.py
-	$(CC) $(CFLAGS) $(SRC) -Wall -lm -O3 -fopenmp -g -o bin/montecarlo
+	$(CC) $(CFLAGS) $(SRC) -Wall -lm -O3 -fopenmp -o bin/montecarlo
 
 clean:
 	rm *~ src/*.o src/*~ include/*.o include/*~ bin/* \#* src/\#* include/\#* bin/\#* \
