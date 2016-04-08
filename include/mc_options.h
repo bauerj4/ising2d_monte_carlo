@@ -1,0 +1,6 @@
+#define SYSMEM_MB 10000
+#define OPENMP 8
+#define LATTICE_SIZE 32
+#define NSTEPS 400000
+#define SEED 1337
+#define TEMPERATURE 2.0
