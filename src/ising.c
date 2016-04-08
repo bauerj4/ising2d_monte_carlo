@@ -16,13 +16,6 @@ double DeltaU(int i, int j)
 {
   int FirstRowIdx; // The index from which to read FirstRows
   int LastRowIdx; // The index from which to read LastRows
-  //int imax;
-  //double Ediff;
-  //printf("Ising (i,j) = %d, %d\n",i,j);
-
-
-  //PrintMatrix(&FirstRows, 1, LATTICE_SIZE * NTasks);
-  //PrintMatrix(&LastRows, 1, LATTICE_SIZE * NTasks);
 
   if (ThisTask != NTasks -1)
     FirstRowIdx = (ThisTask + 1)*LATTICE_SIZE;
@@ -34,7 +27,6 @@ double DeltaU(int i, int j)
   else
     LastRowIdx = (NTasks - 1)*LATTICE_SIZE;
   
-  //printf("Thread %d searching idx pair First, Last = %d, %d \n",ThisTask, FirstRowIdx+j, LastRowIdx +j);
   if (ThisTask != NTasks - 1)
     imax = ProcArray[ThisTask+1]-ProcArray[ThisTask];
   else
@@ -45,27 +37,62 @@ double DeltaU(int i, int j)
   else
     TopSpin = OldSpinMesh[i-1][j];
 
-  //printf("Got top spin on thread %d\n", ThisTask);
   if (i == imax - 1)
     BottomSpin = FirstRows[FirstRowIdx + j];
   else
     BottomSpin = OldSpinMesh[i+1][j];
-  //printf("Got bottom spin on thread %d\n", ThisTask);
 
   if (j == 0)
     LeftSpin = OldSpinMesh[i][LATTICE_SIZE - 1];
   else
     LeftSpin = OldSpinMesh[i][j-1];
-  //printf("Got left spin on thread %d\n", ThisTask);
 
   if (j == LATTICE_SIZE - 1)
     RightSpin = OldSpinMesh[i][0];
   else
     RightSpin = OldSpinMesh[i][j+1];
-  //printf("Got right spin on thread %d\n", ThisTask);
-
   
   Ediff = 2. * OldSpinMesh[i][j] * (TopSpin + BottomSpin +\
 				    LeftSpin + RightSpin);
   return Ediff;
 }
+
+void TotalEnergy()
+{
+  int e_i, e_j;
+  double energy = 0.;
+
+  if (ThisTask != NTasks - 1)
+    imax = ProcArray[ThisTask+1] - ProcArray[ThisTask];
+  else
+    imax = LATTICE_SIZE - ProcArray[ThisTask];
+
+  for (e_i = 0; e_i < imax; e_i++)
+    for (e_j=0; e_j < LATTICE_SIZE; e_j++)
+      energy += DeltaU(e_i, e_j)/2.;
+
+
+  MPI_Allreduce(&energy, &E_arr[currentStep], 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  E_arr[currentStep] /= LATTICE_SIZE*LATTICE_SIZE;
+}
+
+void TotalMagnetization()
+{
+  int e_i, e_j;
+  double magnetization = 0.;
+
+  if (ThisTask != NTasks - 1)
+    imax = ProcArray[ThisTask+1] - ProcArray[ThisTask];
+  else
+    imax = LATTICE_SIZE - ProcArray[ThisTask];
+
+  for (e_i = 0; e_i < imax; e_i++)
+    for (e_j=0; e_j < LATTICE_SIZE; e_j++)
+      magnetization += SpinMesh[e_i][e_j];
+
+
+  MPI_Allreduce(&magnetization, &M_arr[currentStep], 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  M_arr[currentStep] /= LATTICE_SIZE*LATTICE_SIZE;
+}
+
+

@@ -1,6 +1,10 @@
 #define SYSMEM_MB 10000
 #define OPENMP 8
-#define LATTICE_SIZE 2096
-#define NSTEPS 16384000
+#define LATTICE_SIZE 256
+#define NSTEPS 2638400
+#define START_MAGNETIZED 1
+#define STEP_REDUCTION_POWER 0.98
 #define SEED 1337
-#define TEMPERATURE 2.27
+#define T_MIN 0.5
+#define T_MAX 5.0
+#define NTEVALS 50

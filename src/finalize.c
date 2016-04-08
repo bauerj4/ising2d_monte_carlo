@@ -13,6 +13,29 @@ int Finalize()
     imax = LATTICE_SIZE - ProcArray[ThisTask];
   PrintMatrixToFile(SpinMesh, imax, LATTICE_SIZE);
 
+  if (ThisTask == 0)
+    {
+      printf("\nWriting temperature.bin...\n");
+      fileout = fopen("OUTPUTS/temperature.bin","wb");
+      fwrite(T_arr, sizeof(double), NTEVALS, fileout);
+      fclose(fileout);
+
+      printf("Writing energy.bin...\n");
+      fileout = fopen("OUTPUTS/energy.bin","wb");
+      fwrite(E_arr, sizeof(double), NTEVALS, fileout);
+      fclose(fileout);
+
+      printf("Writing magnetization.bin...\n");
+      fileout = fopen("OUTPUTS/magnetization.bin","wb");
+      fwrite(M_arr, sizeof(double), NTEVALS, fileout);
+      fclose(fileout);
+
+      printf("Writing heat_capacity.bin...\n");
+      fileout = fopen("OUTPUTS/heat_capacity.bin","wb");
+      fwrite(C_arr, sizeof(double), NTEVALS, fileout);
+      fclose(fileout);
+    }
+  
   //MatrixFree(SpinMesh);
   //MatrixFree(OldSpinMesh);
   free(SpinMesh);

@@ -26,7 +26,22 @@ int main(int argc, char ** argv)
   //PrintMatrix(SpinMesh, imax, LATTICE_SIZE);
 
 
-  Metropolis();
+  currentStep = 0;
+  TheseIterations = NSTEPS;
+  while (Temperature < T_MAX)
+    {
+      if (ThisTask==0)
+	printf("Temperature = %f e / k_B\n", Temperature);
+      Metropolis();
+      T_arr[currentStep] = Temperature;
+      TotalEnergy();
+      TotalMagnetization();
+      if (ThisTask==0)
+        printf("M/N = %2.5f\tE/N = %2.5f\n\n", M_arr[currentStep], E_arr[currentStep]);
+
+      Temperature += Tstep;
+      currentStep++;
+    }
 
   if (ThisTask == 2)
     PrintMatrix(SpinMesh, imax, LATTICE_SIZE);

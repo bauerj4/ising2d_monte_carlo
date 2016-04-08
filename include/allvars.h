@@ -44,6 +44,17 @@ extern double LeftSpin;
 extern double RightSpin;
 
 
+// Chain parameters
+
+extern int TheseIterations; // Number of iterations to do this time
+extern int currentStep;
+extern double Temperature;
+extern double Tstep;
+extern double * T_arr; // Temp
+extern double * E_arr; // Energy
+extern double * M_arr; // Magnetization
+extern double * C_arr; // Heat capacity
+
 // Output
 
 extern FILE * fileout;

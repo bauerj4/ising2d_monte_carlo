@@ -42,6 +42,17 @@ double BottomSpin;
 double LeftSpin;
 double RightSpin;
 
+// Chain
+
+int TheseIterations;
+int currentStep;
+double Temperature;
+double Tstep;
+double * T_arr;
+double * E_arr;
+double * M_arr;
+double * C_arr;
+
 // Output
 
 FILE * fileout;

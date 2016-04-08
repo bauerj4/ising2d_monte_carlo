@@ -47,6 +47,8 @@ double Uniform();
 */
 
 double DeltaU(int i, int j);
+void TotalEnergy();
+void TotalMagnetization();
 
 /*
   Metropolis

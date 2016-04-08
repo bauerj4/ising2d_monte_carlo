@@ -27,10 +27,11 @@ int Metropolis()
 
   n=0;
   i=0;
-  while (n < (int)NSTEPS)
+  //TheseIterations = NSTEPS;
+  while (n < (int)TheseIterations)
     {
-       if (ThisTask == 0 && n % 200 == 0)
-      	printf("Metropolis Iteration: %d / %d \t Memory Allocated: %10.2f MB\r", (n+1), NSTEPS, \
+      if (ThisTask == 0 && (n % 1000 == 0  || n == TheseIterations - 1))
+      	printf("Metropolis Iteration: %d / %d \t Memory Allocated: %10.2f MB\r", (n+1), TheseIterations, \
       	       (double)ByteCount/1.e6);
       i = RandomIntInRange(0, imax-1);
       j = RandomIntInRange(0, LATTICE_SIZE);
@@ -47,7 +48,7 @@ int Metropolis()
       else
 	{
 	  rand = Uniform();
-	  prob = exp(-Ediff / TEMPERATURE);
+	  prob = exp(-Ediff / Temperature);
 	  if (rand < prob)
 	    {
 	      //printf("Flipping spin on thread %d\n", ThisTask);
@@ -69,5 +70,10 @@ int Metropolis()
       MPI_Barrier(MPI_COMM_WORLD);
       n++;
     }
+#ifdef STEP_REDUCTION_POWER
+  TheseIterations = (int)((double)NSTEPS * pow(STEP_REDUCTION_POWER, currentStep));
+#endif // ITERATION_REDUCTION_POWER     
+  if (ThisTask==0)
+    printf("\n");
   return 0;
 }

@@ -32,6 +32,14 @@ int Initialize()
     rmax = ProcArray[ThisTask + 1] - ProcArray[ThisTask];
   else
     rmax = LATTICE_SIZE - ProcArray[ThisTask];
+
+  Temperature = T_MIN;
+  Tstep = (T_MAX - T_MIN)/((double)NTEVALS);
+  T_arr = malloc(NTEVALS * sizeof(double));
+  E_arr= malloc(NTEVALS * sizeof(double));
+  M_arr= malloc(NTEVALS * sizeof(double));
+  C_arr= malloc(NTEVALS * sizeof(double));
+
   // Allocate the meshes with one ghost row
 
   if (ThisTask == 0)
@@ -88,7 +96,12 @@ void GenerateRandomSpins()
 	val = (short int) RandomIntInRange(0,1);
 	if (val == 0)
 	  val = -1;
+#ifndef START_MAGNETIZED
 	SpinMesh[i][j] = val;
 	OldSpinMesh[i][j] = SpinMesh[i][j];
+#else
+	SpinMesh[i][j] = -1;
+	OldSpinMesh[i][j] = -1;
+#endif
       }
 }
